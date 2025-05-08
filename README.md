@@ -1,5 +1,7 @@
 # GCERC Award Timeline Visualization
 
+[Click here to view the interactive visualization](index.html)
+
 ## Overview
 This interactive visualization displays the timeline of GCERC (Gulf Coast Ecosystem Restoration Council) awards, including their status, amendments, and associated funding amounts. The visualization allows users to explore award data through time, filter by grant leads and program staff, and track amendments to awards.
 

@@ -1,0 +1,5755 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GCERC Cumulative Award Summary</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        .header-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .graph-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .back-link-btn {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2196F3;
+            background-color: #e3f2fd;
+            padding: 10px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid #90caf9;
+            transition: all 0.2s ease;
+        }
+        .back-link-btn:hover {
+            background-color: #2196F3;
+            color: white;
+            border-color: #2196F3;
+            box-shadow: 0 2px 5px rgba(33,150,243,0.3);
+        }
+        .chart-card {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        .chart-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .chart-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .legend-box-container {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #334155;
+        }
+        .legend-color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        .axis text {
+            font-size: 13px;
+        }
+        .axis path, .axis line {
+            stroke: #cbd5e1;
+        }
+        .grid line {
+            stroke: #f1f5f9;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            border-radius: 4px;
+            font-size: 13px;
+            pointer-events: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .source-date-footer {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="graph-title">GCERC Cumulative Award Summary</div>
+        <a href="index.html" class="back-link-btn">&larr; Back to Award Timeline</a>
+    </div>
+
+    <!-- Chart 1: Cumulative Number of Awards -->
+    <div class="chart-card">
+        <div class="chart-header-row">
+            <div class="chart-header">1. Cumulative Number of Awards by Year</div>
+            <div class="legend-box-container">
+                <div class="legend-item">
+                    <div class="legend-color-box" style="background-color: #ff9800;"></div>
+                    Closed Out Awards
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color-box" style="background-color: rgb(30, 144, 255);"></div>
+                    Active Awards
+                </div>
+            </div>
+        </div>
+        <div id="countChart"></div>
+        <div class="source-date-footer">Date of Source Data = July 23, 2026</div>
+    </div>
+
+    <!-- Chart 2: Cumulative Funding Amount -->
+    <div class="chart-card">
+        <div class="chart-header-row">
+            <div class="chart-header">2. Cumulative Award Funding ($) by Year</div>
+            <div class="legend-box-container">
+                <div class="legend-item">
+                    <div class="legend-color-box" style="background-color: #ff9800;"></div>
+                    Amount of Closed Awards
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color-box" style="background-color: rgb(30, 144, 255);"></div>
+                    Amount of Active Awards
+                </div>
+            </div>
+        </div>
+        <div id="fundingChart"></div>
+        <div class="source-date-footer">Date of Source Data = July 23, 2026</div>
+    </div>
+
+    <script>
+        const jsonData = [
+    {
+        "Title": "SEP #17: Fairhope Area Community-Based Comprehensive Land Use",
+        "FAIN": "GNSSP20AL0001",
+        "Project Start Date": "2019-09-01",
+        "Project End Date": "2025-03-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 720694.21
+    },
+    {
+        "Title": "SEP #15: Mobile Area Storm Water Mapping & Resiliency Planning",
+        "FAIN": "GNSSP20AL0002",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2025-01-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 3899593.0
+    },
+    {
+        "Title": "SEP #9: Extension of Effluent Force Main from Bayou La Batre WWTF",
+        "FAIN": "GNSSP20AL0003",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2027-07-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 21131315.1
+    },
+    {
+        "Title": "SEP #23: Orange Beach North Sewer Force Main Upgrade",
+        "FAIN": "GNSSP20AL0004",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2023-09-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 5998795.33
+    },
+    {
+        "Title": "SEP #25: Fairhope Sewer Upgrade Phase I",
+        "FAIN": "GNSSP20AL0005",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2026-07-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 13515000.0
+    },
+    {
+        "Title": "SEP #22: Canal Road Improvements E. of SR-161",
+        "FAIN": "GNSSP20AL0006",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2024-09-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 5670037.0
+    },
+    {
+        "Title": "SEP #11: Lillian Park Beach Habitat and Shoreline Protection",
+        "FAIN": "GNSSP20AL0007",
+        "Project Start Date": "2020-05-01",
+        "Project End Date": "2028-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 2520383.0
+    },
+    {
+        "Title": "SEP #12: Perch Creek Area Sanitary Sewer Trunk Line CIPP",
+        "FAIN": "GNSSP20AL0008",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2027-09-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 8670394.0
+    },
+    {
+        "Title": "SEP #18: Fort Morgan Parkway Trail Extension",
+        "FAIN": "GNSSP20AL0009",
+        "Project Start Date": "2019-08-01",
+        "Project End Date": "2027-09-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 7591608.0
+    },
+    {
+        "Title": "SEP #16: Three Mile Creek Watershed Restoration",
+        "FAIN": "GNSSP20AL0011",
+        "Project Start Date": "2020-08-01",
+        "Project End Date": "2027-07-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 23981437.0
+    },
+    {
+        "Title": "6-2: St. Joseph Peninsula Coastal Erosion Control Project \u2013 E&D",
+        "FAIN": "GNSSP20FL0010",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2027-12-15",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 5822014.0
+    },
+    {
+        "Title": "17-1: Cockroach Bay Aquatic Preserve Land Acquisition and Ecosystem Restoration",
+        "FAIN": "GNSSP20FL0012",
+        "Project Start Date": "2019-09-01",
+        "Project End Date": "2028-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 5132239.0
+    },
+    {
+        "Title": "12-2: Suwannee Sound / Cedar Key Oyster Restoration",
+        "FAIN": "GNSSP20FL0013",
+        "Project Start Date": "2019-09-01",
+        "Project End Date": "2028-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 2080054.0
+    },
+    {
+        "Title": "SEP #8: Aloe Bay/Mississippi Sound Water Quality Enhancement Project",
+        "FAIN": "GNSSP21AL0014",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2027-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 26829000.0
+    },
+    {
+        "Title": "SEP #13: Longevity, Stability & Water Quality Improvements, Bon Secour DMDA",
+        "FAIN": "GNSSP21AL0016",
+        "Project Start Date": "2019-10-01",
+        "Project End Date": "2023-02-07",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 585159.73
+    },
+    {
+        "Title": "SEP #19: Meaher Park Improvements",
+        "FAIN": "GNSSP21AL0019",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2025-12-15",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 4583500.0
+    },
+    {
+        "Title": "SEP #21: Alabama Point Seawall Repair",
+        "FAIN": "GNSSP21AL0021",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2024-01-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 112323.39
+    },
+    {
+        "Title": "SEP #6: City of Chickasaw Sewer Rehabilitation Project",
+        "FAIN": "GNSSP21AL0024",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2027-12-15",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 2887476.0
+    },
+    {
+        "Title": "SEP #1-Environmental Restoration of Cotton Bayou & Terry Cove (Phase 1-Planning)",
+        "FAIN": "GNSSP21AL0026",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2024-05-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 539025.7
+    },
+    {
+        "Title": "SEP #20 Mobile County Dirt Road Paving (Sediment Reduction) Program",
+        "FAIN": "GNSSP21AL0027",
+        "Project Start Date": "2021-06-01",
+        "Project End Date": "2026-09-11",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 10395914.0
+    },
+    {
+        "Title": "24-1: Adaptive Planning and Compliance Project",
+        "FAIN": "GNSSP21FL0020",
+        "Project Start Date": "2021-03-08",
+        "Project End Date": "2029-02-28",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 604602.0
+    },
+    {
+        "Title": "18-2: Portosueno Park Living Shoreline",
+        "FAIN": "GNSSP21FL0022",
+        "Project Start Date": "2020-05-11",
+        "Project End Date": "2027-04-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1256624.0
+    },
+    {
+        "Title": "16-2: Wastewater Collection System Improvements \u2013 E&D",
+        "FAIN": "GNSSP21FL0023",
+        "Project Start Date": "2020-05-11",
+        "Project End Date": "2024-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 5620106.0
+    },
+    {
+        "Title": "1-1: Bayou Chico Contaminated Sediment Remediation Project",
+        "FAIN": "GNSSP21FL0025",
+        "Project Start Date": "2019-09-16",
+        "Project End Date": "2029-03-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1121773.0
+    },
+    {
+        "Title": "18-6: Gulf Shellfish Institute: Applied Research for Shellfish Aquaculture",
+        "FAIN": "GNSSP21FL0028",
+        "Project Start Date": "2022-03-17",
+        "Project End Date": "2027-06-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 349885.0
+    },
+    {
+        "Title": "7-3: Apalachicola Bay Cooperative Dredging",
+        "FAIN": "GNSSP21FL0029",
+        "Project Start Date": "2020-04-06",
+        "Project End Date": "2023-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 6028150.41
+    },
+    {
+        "Title": "18-10: Kingfish Boat Ramp Renovation and Expansion - Construction",
+        "FAIN": "GNSSP21FL0030",
+        "Project Start Date": "2020-08-28",
+        "Project End Date": "2023-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 21473.94
+    },
+    {
+        "Title": "Houma Navigation Canal Lock Complex Project - Phase I Construction",
+        "FAIN": "GNSSP21LA0018",
+        "Project Start Date": "2021-03-01",
+        "Project End Date": "2031-03-01",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 189853512.0
+    },
+    {
+        "Title": "Activity #9: Beneficial Use of Dredge Material for Marsh Creation and Restoration in Mississippi",
+        "FAIN": "GNSSP21MS0015",
+        "Project Start Date": "2020-12-18",
+        "Project End Date": "2026-11-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 18970873.0
+    },
+    {
+        "Title": "Mississippi Beachfront Resilience",
+        "FAIN": "GNSSP21MS0017",
+        "Project Start Date": "2021-02-05",
+        "Project End Date": "2027-10-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 9948347.0
+    },
+    {
+        "Title": "SEP #10: Bayou La Batre Collection System/Lift Station Upgrades",
+        "FAIN": "GNSSP22AL0031",
+        "Project Start Date": "2021-12-17",
+        "Project End Date": "2025-12-16",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 15701150.0
+    },
+    {
+        "Title": "SEP #24: Storm Water Management Improvements for Toulmin Springs Branch and Gum Tree Branch",
+        "FAIN": "GNSSP22AL0032",
+        "Project Start Date": "2022-02-07",
+        "Project End Date": "2028-06-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 1222744.0
+    },
+    {
+        "Title": "SEP #29 - Planning Grant to Amend State Expenditure Plan 2021",
+        "FAIN": "GNSSP22AL0033",
+        "Project Start Date": "2022-01-14",
+        "Project End Date": "2028-06-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 514043.0
+    },
+    {
+        "Title": "SEP #26: Little Lagoon Restoration Project",
+        "FAIN": "GNSSP22AL0038",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2026-11-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 6175557.0
+    },
+    {
+        "Title": "SEP #4: Auburn University Gulf Coast Engineering Research Station",
+        "FAIN": "GNSSP22AL0042",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2029-05-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 14395000.0
+    },
+    {
+        "Title": "SEP #3: Expansion of the Orange Beach Wildlife Rehabilitation and Education Program",
+        "FAIN": "GNSSP22AL0043",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 1192255.0
+    },
+    {
+        "Title": "13-1: NW Quadrant Sewer Force Main Project \u2013 Construction",
+        "FAIN": "GNSSP22FL0034",
+        "Project Start Date": "2022-03-09",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 5997571.0
+    },
+    {
+        "Title": "2-1: Santa Rosa Sound Water Quality Improvement Program - Monitoring",
+        "FAIN": "GNSSP22FL0036",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2027-06-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 12266475.0
+    },
+    {
+        "Title": "10-2: Hodges Park Rehabilitation",
+        "FAIN": "GNSSP22FL0037",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2027-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1855529.0
+    },
+    {
+        "Title": "8-1: Wakulla Springshed Water Quality Protection Program - Otter Creek WWTF Construction",
+        "FAIN": "GNSSP22FL0039",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2027-06-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 12493439.0
+    },
+    {
+        "Title": "3-4: Shoal River Headwaters Protection Program-Phase I Construction",
+        "FAIN": "GNSSP22FL0040",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1431554.0
+    },
+    {
+        "Title": "15-1: Port Richey Watershed Stormwater Management Project-Construction",
+        "FAIN": "GNSSP22FL0041",
+        "Project Start Date": "2022-05-13",
+        "Project End Date": "2024-10-17",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 14375.56
+    },
+    {
+        "Title": "18:1-Manatee River Oyster Restoration",
+        "FAIN": "GNSSP22FL0044",
+        "Project Start Date": "2022-09-09",
+        "Project End Date": "2035-06-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 2039612.0
+    },
+    {
+        "Title": "FY22 RESTORE Shoreline & Beach Restoration (BKT 3)",
+        "FAIN": "GNSSP22TX0035",
+        "Project Start Date": "2022-04-20",
+        "Project End Date": "2026-08-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "SEP",
+        "States": "TX;#43",
+        "Award Amount": 8680000.0
+    },
+    {
+        "Title": "10-3: Keaton Beach and Steinhatchee Boat Ramps By-Pass",
+        "FAIN": "GNSSP23FL0046",
+        "Project Start Date": "2023-02-22",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 383665.0
+    },
+    {
+        "Title": "13-3: Artificial Reef Program (Implementation)",
+        "FAIN": "GNSSP23FL0047",
+        "Project Start Date": "2023-03-08",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1246249.0
+    },
+    {
+        "Title": "16-3: Land Acquisition for Floodplain Restoration & Resiliency",
+        "FAIN": "GNSSP23FL0048",
+        "Project Start Date": "2023-05-25",
+        "Project End Date": "2026-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 3374518.0
+    },
+    {
+        "Title": "10-1: Spring Warrior-Acquisition",
+        "FAIN": "GNSSP23FL0049",
+        "Project Start Date": "2023-05-25",
+        "Project End Date": "2028-09-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 621686.0
+    },
+    {
+        "Title": "6-1: St. Joseph Bay-Chipola River Sewer Improvement Program",
+        "FAIN": "GNSSP23FL0050",
+        "Project Start Date": "2023-06-26",
+        "Project End Date": "2026-03-06",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 803192.68
+    },
+    {
+        "Title": "3-5: Veterans Park Living Shoreline Construction",
+        "FAIN": "GNSSP23FL0052",
+        "Project Start Date": "2023-08-21",
+        "Project End Date": "2027-02-28",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1620624.0
+    },
+    {
+        "Title": "5-1: North Bay Water Quality Improvement Program (Septic-to-Sewer Conversion)",
+        "FAIN": "GNSSP23FL0054",
+        "Project Start Date": "2024-01-16",
+        "Project End Date": "2027-05-01",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 6563518.0
+    },
+    {
+        "Title": "Public/Private Partnership (Accelerate MS)",
+        "FAIN": "GNSSP23MS0045",
+        "Project Start Date": "2023-02-16",
+        "Project End Date": "2027-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 2199550.0
+    },
+    {
+        "Title": "Activity #14: Gulf Coast Center of Security and Emerging Technology (CSET) Program",
+        "FAIN": "GNSSP23MS0051",
+        "Project Start Date": "2023-07-07",
+        "Project End Date": "2027-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 5237010.0
+    },
+    {
+        "Title": "FY22 RESTORE NBT-IB Magee Beach Park (BKT 3)",
+        "FAIN": "GNSSP23TX0053",
+        "Project Start Date": "2023-08-21",
+        "Project End Date": "2029-06-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "SEP",
+        "States": "TX;#43",
+        "Award Amount": 1050000.0
+    },
+    {
+        "Title": "17-2: Delaney Creek-Palm River Heights Septic to Sewer Hillsborough County",
+        "FAIN": "GNSSP24FL0055",
+        "Project Start Date": "2024-05-30",
+        "Project End Date": "2028-08-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 7485976.0
+    },
+    {
+        "Title": "14-5: Coastal Stormwater Improvement-Calienta Street",
+        "FAIN": "GNSSP24FL0057",
+        "Project Start Date": "2024-06-25",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 3052661.0
+    },
+    {
+        "Title": "Activity #16: D\u2019Iberville Working Waterfront and Commercial Seafood Harbor",
+        "FAIN": "GNSSP24MS0056",
+        "Project Start Date": "2024-03-12",
+        "Project End Date": "2029-03-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 8462523.0
+    },
+    {
+        "Title": "Activity #19: Workforce Training - Meeting the Needs of the Supply Chain",
+        "FAIN": "GNSSP24MS0058",
+        "Project Start Date": "2024-07-02",
+        "Project End Date": "2028-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 5294686.0
+    },
+    {
+        "Title": "Activity #20: Health Professions (HEALP) for Our Community: Health Professions Center of Excellence",
+        "FAIN": "GNSSP24MS0059",
+        "Project Start Date": "2024-07-08",
+        "Project End Date": "2028-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 6284685.0
+    },
+    {
+        "Title": "Activity #13: Coastal Habitat Management Program",
+        "FAIN": "GNSSP24MS0060",
+        "Project Start Date": "2024-08-22",
+        "Project End Date": "2029-07-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 3264176.0
+    },
+    {
+        "Title": "Project #28: One Mobile: Reconnecting People, Work and Play through Complete Streets",
+        "FAIN": "GNSSP25AL0063",
+        "Project Start Date": "2025-01-23",
+        "Project End Date": "2027-10-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 2287500.0
+    },
+    {
+        "Title": "23-1: Canal Management Master Plan Implementation",
+        "FAIN": "GNSSP25FL0064",
+        "Project Start Date": "2025-03-03",
+        "Project End Date": "2029-12-01",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 12516999.0
+    },
+    {
+        "Title": "15-9: Channel Restoration and Water Quality Project",
+        "FAIN": "GNSSP25FL0067",
+        "Project Start Date": "2025-04-01",
+        "Project End Date": "2030-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 12399456.0
+    },
+    {
+        "Title": "13-5: Inshore Artificial Reef",
+        "FAIN": "GNSSP25FL0068",
+        "Project Start Date": "2025-04-01",
+        "Project End Date": "2028-02-01",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 139822.0
+    },
+    {
+        "Title": "11-1: Horseshoe Beach Working Waterfront",
+        "FAIN": "GNSSP25FL0074",
+        "Project Start Date": "2025-07-14",
+        "Project End Date": "2030-09-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1092632.0
+    },
+    {
+        "Title": "River Reintroduction into Muarepas Swamp (Construction)",
+        "FAIN": "GNSSP25LA0072",
+        "Project Start Date": "2025-06-12",
+        "Project End Date": "2029-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 60000000.0
+    },
+    {
+        "Title": "Activity #22: Institute of Marine Mammal Studies Outreach and Ecotourism",
+        "FAIN": "GNSSP25MS0061",
+        "Project Start Date": "2024-12-19",
+        "Project End Date": "2027-07-15",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 824078.0
+    },
+    {
+        "Title": "Activity #18: Walter Anderson Museum of Art Creative Complex",
+        "FAIN": "GNSSP25MS0062",
+        "Project Start Date": "2024-12-19",
+        "Project End Date": "2026-12-15",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1208561.0
+    },
+    {
+        "Title": "Activity #3: Compatibility, Coordination and Restoration Planning Round II",
+        "FAIN": "GNSSP25MS0065",
+        "Project Start Date": "2025-07-01",
+        "Project End Date": "2030-06-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 498845.0
+    },
+    {
+        "Title": "Activity #23: Coastal Science Program for MS High Schools",
+        "FAIN": "GNSSP25MS0066",
+        "Project Start Date": "2025-06-02",
+        "Project End Date": "2030-05-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1862230.0
+    },
+    {
+        "Title": "Activity #25: Pascagoula River Scenic Trail",
+        "FAIN": "GNSSP25MS0069",
+        "Project Start Date": "2025-05-22",
+        "Project End Date": "2028-05-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 2667583.0
+    },
+    {
+        "Title": "Activity #17: Harbor Expansion Parking Area (Jones Park)",
+        "FAIN": "GNSSP25MS0070",
+        "Project Start Date": "2025-05-22",
+        "Project End Date": "2027-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1616673.0
+    },
+    {
+        "Title": "Activity #30: Classrooms and Dormitories for the Center for Marine Education and Research",
+        "FAIN": "GNSSP25MS0071",
+        "Project Start Date": "2025-04-18",
+        "Project End Date": "2027-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 2654084.08
+    },
+    {
+        "Title": "Activity #24: Nonspecific Invasive Species Detection and Treatment",
+        "FAIN": "GNSSP25MS0073",
+        "Project Start Date": "2025-05-22",
+        "Project End Date": "2028-03-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1097550.88
+    },
+    {
+        "Title": "West Grand Terre Beach Nourishment and Stabilization (Planning)",
+        "FAIN": "GNTCP16LA0024",
+        "Project Start Date": "2016-10-03",
+        "Project End Date": "2020-09-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Brie Bernik",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 3608221.93
+    },
+    {
+        "Title": "Apalachicola Watershed Agriculture Water Quality Improvements (Implementation)",
+        "FAIN": "GNTCP17FL0008",
+        "Project Start Date": "2017-07-10",
+        "Project End Date": "2026-05-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#FL;#9",
+        "Award Amount": 2219856.0
+    },
+    {
+        "Title": "Suwannee River Partnership Irrigation Water Enhancement Program (Implementation)",
+        "FAIN": "GNTCP17FL0015",
+        "Project Start Date": "2017-08-25",
+        "Project End Date": "2027-08-25",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 2884000.0
+    },
+    {
+        "Title": "Bayou Chico Contaminated Sediment Removal- Planning, Design, and Permitting (Planning)",
+        "FAIN": "GNTCP17FL0018",
+        "Project Start Date": "2017-04-14",
+        "Project End Date": "2029-03-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 356850.0
+    },
+    {
+        "Title": "Beach Haven \u2013 Joint Stormwater & Wastewater Improvement Project Phase II (Implementation)",
+        "FAIN": "GNTCP17FL0026",
+        "Project Start Date": "2017-06-15",
+        "Project End Date": "2029-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 5967000.0
+    },
+    {
+        "Title": "Apalachicola Bay Oyster Restoration (Implementation)",
+        "FAIN": "GNTCP17FL0039",
+        "Project Start Date": "2017-04-01",
+        "Project End Date": "2021-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 4679877.73
+    },
+    {
+        "Title": "Pensacola Bay Living Shoreline - Phase 1 (Planning)",
+        "FAIN": "GNTCP17FL0040",
+        "Project Start Date": "2017-01-01",
+        "Project End Date": "2029-03-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 1795950.0
+    },
+    {
+        "Title": "Golden Triangle Marsh Creation (Planning)",
+        "FAIN": "GNTCP17LA0013",
+        "Project Start Date": "2016-11-01",
+        "Project End Date": "2021-01-29",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 2778769.62
+    },
+    {
+        "Title": "Biloxi Marsh Living Shoreline (Planning)",
+        "FAIN": "GNTCP17LA0025",
+        "Project Start Date": "2016-11-01",
+        "Project End Date": "2021-06-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 2568167.29
+    },
+    {
+        "Title": "Mississippi River Reintroduction into Maurepas Swamp (Planning)",
+        "FAIN": "GNTCP17LA0044",
+        "Project Start Date": "2017-09-22",
+        "Project End Date": "2028-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 14190000.0
+    },
+    {
+        "Title": "Sea Grant Education and Outreach (Planning & Implementation)",
+        "FAIN": "GNTCP17MS0020",
+        "Project Start Date": "2016-07-01",
+        "Project End Date": "2020-11-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 592485.48
+    },
+    {
+        "Title": "Enhancing Opportunities for Beneficial Use (BU) of Dredge Sediments in the Mississippi Sound (Planning)",
+        "FAIN": "GNTCP17MS0022",
+        "Project Start Date": "2016-05-01",
+        "Project End Date": "2025-05-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 1743003.73
+    },
+    {
+        "Title": "Matagorda Bay System Priority Landscape Conservation FY16 RESTORE-Matagorda Bay BKT 2",
+        "FAIN": "GNTCP17TX0009",
+        "Project Start Date": "2016-04-28",
+        "Project End Date": "2020-11-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 5987350.05
+    },
+    {
+        "Title": "Bahia Grande Coastal Corridor (BGCC) (Implementation): FY16 RESTORE-Bahia Grande BKT 2",
+        "FAIN": "GNTCP17TX0010",
+        "Project Start Date": "2016-04-28",
+        "Project End Date": "2019-08-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 4308461.84
+    },
+    {
+        "Title": "Commitment and Planning Support \u2013 Alabama",
+        "FAIN": "GNTCP18AL0064",
+        "Project Start Date": "2018-05-16",
+        "Project End Date": "2029-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 3850000.0
+    },
+    {
+        "Title": "Coastal Alabama Comprehensive Watershed Restoration Planning Project",
+        "FAIN": "GNTCP18AL0066",
+        "Project Start Date": "2018-09-14",
+        "Project End Date": "2026-07-15",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 4342500.0
+    },
+    {
+        "Title": "Alabama Submerged Aquatic Vegetation Restoration and Monitoring Program (Implementation)",
+        "FAIN": "GNTCP18AL0068",
+        "Project Start Date": "2018-07-30",
+        "Project End Date": "2026-03-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 875000.0
+    },
+    {
+        "Title": "Palm River Restoration Project Phase II, East McKay Bay (Implementation)",
+        "FAIN": "GNTCP18FL0047",
+        "Project Start Date": "2018-04-02",
+        "Project End Date": "2023-05-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 832493.69
+    },
+    {
+        "Title": "Commitment and Planning Support \u2013 Florida",
+        "FAIN": "GNTCP18FL0054",
+        "Project Start Date": "2018-04-23",
+        "Project End Date": "2031-03-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 3843880.0
+    },
+    {
+        "Title": "Lowermost Mississippi River Management Program (Planning)",
+        "FAIN": "GNTCP18LA0035",
+        "Project Start Date": "2018-03-06",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 9300000.0
+    },
+    {
+        "Title": "Commitment and Planning Support\u2014Coastal Protection and Restoration Authority",
+        "FAIN": "GNTCP18LA0055",
+        "Project Start Date": "2018-05-16",
+        "Project End Date": "2026-05-15",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 3850000.0
+    },
+    {
+        "Title": "Commitment and Planning Support\u2014Mississippi",
+        "FAIN": "GNTCP18MS0056",
+        "Project Start Date": "2018-06-08",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 2100000.0
+    },
+    {
+        "Title": "Bayou Greenways Planning & Implementation: FY16 RESTORE BKT 2",
+        "FAIN": "GNTCP18TX0011",
+        "Project Start Date": "2016-04-28",
+        "Project End Date": "2020-11-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 5692731.91
+    },
+    {
+        "Title": "Texas Beneficial Use/Marsh Restoration FY16 RESTORE-Beneficial Use BKT 2",
+        "FAIN": "GNTCP18TX0012",
+        "Project Start Date": "2018-07-31",
+        "Project End Date": "2023-02-28",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 636665.03
+    },
+    {
+        "Title": "Commitment and Planning Support - Texas",
+        "FAIN": "GNTCP18TX0061",
+        "Project Start Date": "2018-06-01",
+        "Project End Date": "2028-05-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 3850000.0
+    },
+    {
+        "Title": "Enhancing Opportunities for Beneficial Use of Dredge Sediments (Denton Oyster Reef Restoration Through Beneficial Use of Upriver Sediment; Grand Bay Mississippi Sound Back-Barrier Island Restoration Project Feasibility Study; Lower Perdido Bay/Perdido",
+        "FAIN": "GNTCP19AL0082",
+        "Project Start Date": "2019-04-01",
+        "Project End Date": "2026-03-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 1046662.36
+    },
+    {
+        "Title": "Alabama Living Shorelines Program (Construction Planning Component)",
+        "FAIN": "GNTCP19AL0085",
+        "Project Start Date": "2019-05-01",
+        "Project End Date": "2026-11-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 908500.0
+    },
+    {
+        "Title": "Strategic Land Protection, Conservation, and Enhancement of Priority Gulf Coast Landscapes in MS (Planning & Implementation)",
+        "FAIN": "GNTCP19MS0060",
+        "Project Start Date": "2016-07-01",
+        "Project End Date": "2032-02-28",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 15500000.0
+    },
+    {
+        "Title": "The Mississippi Sound Estuarine Program",
+        "FAIN": "GNTCP19MS0062",
+        "Project Start Date": "2019-07-01",
+        "Project End Date": "2027-06-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 2270000.0
+    },
+    {
+        "Title": "Upper Mobile Bay Beneficial Use Wetland Creation Site (Planning)",
+        "FAIN": "GNTCP20AP0104",
+        "Project Start Date": "2020-01-27",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "AL Port Authority",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 2500000.0
+    },
+    {
+        "Title": "Gulf Consortium Preparation of Full State Expenditure Plan",
+        "FAIN": "GNTSP16FL0021",
+        "Project Start Date": "2014-08-23",
+        "Project End Date": "2020-04-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Not Applicable",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "",
+        "Award Amount": 2931659.45
+    },
+    {
+        "Title": "Mississippi State Expenditure Plan",
+        "FAIN": "GNTSP16MS0019",
+        "Project Start Date": "2016-05-13",
+        "Project End Date": "2019-04-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Not Applicable",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 852766.66
+    },
+    {
+        "Title": "Adaptive Management",
+        "FAIN": "GNTSP17LA0046",
+        "Project Start Date": "2017-03-23",
+        "Project End Date": "2024-06-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 60124929.0
+    },
+    {
+        "Title": "Texas Planning State Expenditure Plan (Texas PSEP) (FY17 RESTORE Texas Planning SEP)",
+        "FAIN": "GNTSP17TX0042",
+        "Project Start Date": "2017-04-06",
+        "Project End Date": "2020-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Not Applicable",
+        "Recipient": "TCEQ",
+        "Grant Program": "SEP",
+        "States": "",
+        "Award Amount": 93718.82
+    },
+    {
+        "Title": "Houma Navigation Canal Lock Complex (Planning)",
+        "FAIN": "GNTSP18LA0049",
+        "Project Start Date": "2018-03-19",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 18520214.0
+    },
+    {
+        "Title": "Compatibility, Coordination and Restoration Planning",
+        "FAIN": "GNTSP18MS0048",
+        "Project Start Date": "2017-04-13",
+        "Project End Date": "2025-06-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 2530068.97
+    },
+    {
+        "Title": "Laboratory to Support Mississippi Gulf Coast Water Quality Improvement Program",
+        "FAIN": "GNTSP18MS0053",
+        "Project Start Date": "2018-09-07",
+        "Project End Date": "2020-12-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Brie Bernik",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1133224.29
+    },
+    {
+        "Title": "Mississippi Gulf Coast Water Quality Improvement Program",
+        "FAIN": "GNTSP18MS0058",
+        "Project Start Date": "2018-03-15",
+        "Project End Date": "2028-07-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 22326789.0
+    },
+    {
+        "Title": "Florida Stand-Up State Expenditure Plan",
+        "FAIN": "GNTSP19FL0077",
+        "Project Start Date": "2017-07-01",
+        "Project End Date": "2019-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Not Applicable",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "",
+        "Award Amount": 215412.35
+    },
+    {
+        "Title": "15-5: Artificial Reef Program - Hudson Reef",
+        "FAIN": "GNTSP19FL0086",
+        "Project Start Date": "2019-02-19",
+        "Project End Date": "2021-06-30",
+        "Grant Lead": "Barbara Shumar",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 10768.75
+    },
+    {
+        "Title": "Paradis Canal Gate (CPRA-Parish Matching Opportunities Project)",
+        "FAIN": "GNTSP19LA0070",
+        "Project Start Date": "2019-06-25",
+        "Project End Date": "2023-03-15",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 2576343.98
+    },
+    {
+        "Title": "Pascagoula Oyster Reef Complex Relay and Enhancement",
+        "FAIN": "GNTSP19MS0075",
+        "Project Start Date": "2019-04-19",
+        "Project End Date": "2029-04-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 4100000.0
+    },
+    {
+        "Title": "Remote Oyster Setting Facility",
+        "FAIN": "GNTSP19MS0080",
+        "Project Start Date": "2019-08-01",
+        "Project End Date": "2026-07-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 9298031.0
+    },
+    {
+        "Title": "State of Alabama Planning State Expenditure Plan (PSEP)",
+        "FAIN": "GNTSP20AL0079",
+        "Project Start Date": "2017-07-01",
+        "Project End Date": "2020-03-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Not Applicable",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "",
+        "Award Amount": 180776.13
+    },
+    {
+        "Title": "SEP #7 Alabama Gulf Seafood Marketing",
+        "FAIN": "GNTSP20AL0094",
+        "Project Start Date": "2019-04-08",
+        "Project End Date": "2024-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 2979886.42
+    },
+    {
+        "Title": "SEP #14 Replacement of Substandard Facilities at the ADEM Coastal Office and Mobile Field Office",
+        "FAIN": "GNTSP20AL0095",
+        "Project Start Date": "2020-04-01",
+        "Project End Date": "2025-08-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 8002448.13
+    },
+    {
+        "Title": "SEP #2: Development of a Regional Strategic Plan for the Coastal Alabama Region",
+        "FAIN": "GNTSP20AL0096",
+        "Project Start Date": "2019-12-01",
+        "Project End Date": "2024-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 569809.05
+    },
+    {
+        "Title": "SEP #5: Characterization and Delineation of Significant Sand Resource Areas Essential for Beach Restoration",
+        "FAIN": "GNTSP20AL0120",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2027-01-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "SEP",
+        "States": "AL;#1",
+        "Award Amount": 1234074.0
+    },
+    {
+        "Title": "Wastewater Improvement \u2013 Combined Project 1 (2-1 Santa Rosa, 3-4 Okaloosa, 13-1 Citrus, 20-1 Charlotte)",
+        "FAIN": "GNTSP20FL0088",
+        "Project Start Date": "2018-10-08",
+        "Project End Date": "2022-03-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 709196.56
+    },
+    {
+        "Title": "8-2: Coastal Access Program \u2013 Bayside Marina Feasibility Study",
+        "FAIN": "GNTSP20FL0089",
+        "Project Start Date": "2019-01-07",
+        "Project End Date": "2021-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 52784.79
+    },
+    {
+        "Title": "3-3: Choctawhatchee Bay Estuary Program",
+        "FAIN": "GNTSP20FL0090",
+        "Project Start Date": "2020-02-14",
+        "Project End Date": "2028-02-28",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1066139.0
+    },
+    {
+        "Title": "16-1: Lake Seminole Sediment Removal",
+        "FAIN": "GNTSP20FL0091",
+        "Project Start Date": "2019-02-19",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 1237121.0
+    },
+    {
+        "Title": "19-1: Sarasota County Dona Bay Hydrologic Restoration Program, Phases III-V \u2013 E&D",
+        "FAIN": "GNTSP20FL0092",
+        "Project Start Date": "2018-10-01",
+        "Project End Date": "2030-03-01",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 2973261.0
+    },
+    {
+        "Title": "22-1: Comprehensive Watershed Improvement Program - Monitoring and Master Plan",
+        "FAIN": "GNTSP20FL0097",
+        "Project Start Date": "2018-10-01",
+        "Project End Date": "2024-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 338039.19
+    },
+    {
+        "Title": "5-2: St. Andrew Bay Stormwater Improvement Program \u2013 St. Andrew Bay Watch \u2013 Water Quality Monitoring",
+        "FAIN": "GNTSP20FL0098",
+        "Project Start Date": "2019-05-01",
+        "Project End Date": "2027-12-01",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 5460910.0
+    },
+    {
+        "Title": "4-1: Choctawhatchee Bay Septic to Sewer Conversion \u2013 Feasibility Study",
+        "FAIN": "GNTSP20FL0105",
+        "Project Start Date": "2018-10-01",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 631303.45
+    },
+    {
+        "Title": "9-2: Wacissa River Park Improvement Program \u2013 Planning and Acquisition",
+        "FAIN": "GNTSP20FL0106",
+        "Project Start Date": "2018-10-01",
+        "Project End Date": "2021-10-29",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 62979.55
+    },
+    {
+        "Title": "13-2: Cross Florida Barge Canal Boat Ramp - E&D",
+        "FAIN": "GNTSP20FL0107",
+        "Project Start Date": "2020-02-07",
+        "Project End Date": "2027-03-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 695024.0
+    },
+    {
+        "Title": "14-1: Artificial Reef Program",
+        "FAIN": "GNTSP20FL0110",
+        "Project Start Date": "2018-10-01",
+        "Project End Date": "2027-09-30",
+        "Grant Lead": "Sheri Land",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "Gulf Consortium",
+        "Grant Program": "SEP",
+        "States": "FL;#9",
+        "Award Amount": 2143443.93
+    },
+    {
+        "Title": "Lake Lery Marsh Creation Project",
+        "FAIN": "GNTSP20LA0071",
+        "Project Start Date": "2019-08-09",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 2997844.0
+    },
+    {
+        "Title": "Freshwater Bayou Canal Shoreline Protection",
+        "FAIN": "GNTSP20LA0072",
+        "Project Start Date": "2020-05-01",
+        "Project End Date": "2025-08-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 4832624.0
+    },
+    {
+        "Title": "Westward Expansion of the CWPPRA Rockefeller Refuge Shoreline Stabilization Project",
+        "FAIN": "GNTSP20LA0076",
+        "Project Start Date": "2019-08-09",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 6848575.0
+    },
+    {
+        "Title": "Grand Bayou Freshwater Reintroduction (Engineering and Design)",
+        "FAIN": "GNTSP20LA0081",
+        "Project Start Date": "2019-08-01",
+        "Project End Date": "2027-09-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 599386.0
+    },
+    {
+        "Title": "Manchac Landbridge (Rock Breakwater) Shoreline Protection Project",
+        "FAIN": "GNTSP20LA0083",
+        "Project Start Date": "2019-05-08",
+        "Project End Date": "2024-11-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "SEP",
+        "States": "LA;#18",
+        "Award Amount": 3179266.0
+    },
+    {
+        "Title": "Gulf of Mexico Citizen Led Initiative",
+        "FAIN": "GNTSP20MS0084",
+        "Project Start Date": "2019-11-08",
+        "Project End Date": "2027-01-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1899702.0
+    },
+    {
+        "Title": "Hancock County Marsh Living Shoreline",
+        "FAIN": "GNTSP20MS0103",
+        "Project Start Date": "2020-03-01",
+        "Project End Date": "2026-02-28",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 5992526.0
+    },
+    {
+        "Title": "Mississippi Sound Oyster Shell Recycling Program",
+        "FAIN": "GNTSP20MS0128",
+        "Project Start Date": "2020-03-01",
+        "Project End Date": "2027-02-28",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 649722.0
+    },
+    {
+        "Title": "FY20 RESTORE Nature Based Tourism",
+        "FAIN": "GNTSP20TX0100",
+        "Project Start Date": "2020-02-01",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "SEP",
+        "States": "TX;#43",
+        "Award Amount": 21780000.0
+    },
+    {
+        "Title": "Comprehensive Living Shoreline Monitoring (Planning and Implementation)",
+        "FAIN": "GT1CP21AL0001",
+        "Project Start Date": "2021-01-22",
+        "Project End Date": "2026-08-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 4000000.0
+    },
+    {
+        "Title": "Marsh Restoration in Oyster Bay",
+        "FAIN": "GT1CP23AL0003",
+        "Project Start Date": "2023-06-22",
+        "Project End Date": "2027-12-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 690708.0
+    },
+    {
+        "Title": "Deer Island Beneficial Use Site Implementation",
+        "FAIN": "GT1CP23MS0002",
+        "Project Start Date": "2023-04-11",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 2998626.0
+    },
+    {
+        "Title": "Perdido River Land Conservation and Habitat Enhancements",
+        "FAIN": "GT3CP22AL0001",
+        "Project Start Date": "2021-12-02",
+        "Project End Date": "2026-11-30",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 26880000.0
+    },
+    {
+        "Title": "Florida Strategic Gulf Coast Land Acquisition Program (Planning & Implementation)",
+        "FAIN": "GT3CP22FL0002",
+        "Project Start Date": "2022-03-01",
+        "Project End Date": "2031-09-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 0.0
+    },
+    {
+        "Title": "Florida Water Quality Improvement Program (Planning)",
+        "FAIN": "GT3CP22FL0003",
+        "Project Start Date": "2022-06-16",
+        "Project End Date": "2032-06-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 12523660.0
+    },
+    {
+        "Title": "Florida Gulf Coast Resiliency Program (Planning)",
+        "FAIN": "GT3CP22FL0004",
+        "Project Start Date": "2022-06-16",
+        "Project End Date": "2031-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 5600000.0
+    },
+    {
+        "Title": "Florida Gulf Coast Tributaries Hydrologic Restoration Program (Planning)",
+        "FAIN": "GT3CP22FL0006",
+        "Project Start Date": "2022-09-09",
+        "Project End Date": "2032-08-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "FDEP",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 3437500.0
+    },
+    {
+        "Title": "Texas Land Acquisition Program for Coastal Conservation (Planning and Implementation)",
+        "FAIN": "GT3CP22TX0005",
+        "Project Start Date": "2022-09-09",
+        "Project End Date": "2027-08-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 24300000.0
+    },
+    {
+        "Title": "Enhancing Hydrologic Connectivity in Justin\u2019s Bay (Mobile Bay) (Planning)",
+        "FAIN": "GT3CP23AL0007",
+        "Project Start Date": "2023-03-06",
+        "Project End Date": "2026-03-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 1000000.0
+    },
+    {
+        "Title": "Water Quality Improvement Program for Coastal Mississippi Waters (Planning)",
+        "FAIN": "GT3CP23MS0008",
+        "Project Start Date": "2023-09-07",
+        "Project End Date": "2028-09-07",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 6849784.0
+    },
+    {
+        "Title": "Coastal Alabama Regional Water Quality Program (Planning)",
+        "FAIN": "GT3CP24AL0010",
+        "Project Start Date": "2024-03-12",
+        "Project End Date": "2028-12-31",
+        "Grant Lead": "Katy Baxter",
+        "Programs Staff Lead": "Matt Love",
+        "Recipient": "ADCNR",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 26573850.0
+    },
+    {
+        "Title": "River Reintroduction into Maurepas Swamp (Construction)",
+        "FAIN": "GT3CP24LA0009",
+        "Project Start Date": "2024-03-12",
+        "Project End Date": "2028-03-08",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "LA CPRA",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 130000000.0
+    },
+    {
+        "Title": "Gulf of Mexico Habitat Restoration via Conservation Corps Partnerships/Youth Conservation Corps (BIA)",
+        "FAIN": "IA1CP21CM0001",
+        "Project Start Date": "2021-04-01",
+        "Project End Date": "2024-09-01",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-BIA",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 229233.4
+    },
+    {
+        "Title": "Gulf of Mexico Conservation Enhancement Grant Program",
+        "FAIN": "IA1CP21CM0002",
+        "Project Start Date": "2021-08-24",
+        "Project End Date": "2026-07-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "EPA",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 2472917.0
+    },
+    {
+        "Title": "Marsh Restoration in Fish River and Weeks Bay (Implementation)",
+        "FAIN": "IA1CP23CM0003",
+        "Project Start Date": "2023-05-23",
+        "Project End Date": "2027-02-26",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOC-NOAA NCCOS",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 1553089.0
+    },
+    {
+        "Title": "Tribal Youth Restoration Program - Alabama - Coushatta Tribe of Texas",
+        "FAIN": "IA1CP25CM0004",
+        "Project Start Date": "2025-06-10",
+        "Project End Date": "2028-06-01",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-BIA",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 70766.0
+    },
+    {
+        "Title": "Gulf of Mexico Coast Conservation Corps (GulfCorps) Program",
+        "FAIN": "IA3CP21CM0001",
+        "Project Start Date": "2021-07-19",
+        "Project End Date": "2025-12-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOC-NOAA NCCOS",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 11971250.0
+    },
+    {
+        "Title": "Develop Ecological Flow Decision-Support for Mobile River & Perdido River Basins",
+        "FAIN": "IA3CP22CM0002",
+        "Project Start Date": "2022-05-05",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-USGS",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#MS;#24;#FL;#9",
+        "Award Amount": 3400000.0
+    },
+    {
+        "Title": "Wind-Tidal Flat Restoration Pilot (Planning & Implementation)",
+        "FAIN": "IA3CP22CM0003",
+        "Project Start Date": "2022-06-01",
+        "Project End Date": "2025-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-NPS",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 321000.0
+    },
+    {
+        "Title": "Gulf Coast Tribal Youth Conservation Program (Planning & Implementation)",
+        "FAIN": "IA3CP23CM0004",
+        "Project Start Date": "2023-02-15",
+        "Project End Date": "2026-11-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-BIA",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 927000.0
+    },
+    {
+        "Title": "Enhancing Gulf Waters through Forested Watershed Restoration (Planning & Implementation)",
+        "FAIN": "IA3CP23CM0005",
+        "Project Start Date": "2023-09-18",
+        "Project End Date": "2030-08-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "USDA-USFS",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#MS;#24;#FL;#9",
+        "Award Amount": 23000000.0
+    },
+    {
+        "Title": "Apalachicola Regional Restoration Initiative: Strategies 2 & 3 (Planning & Implementation)",
+        "FAIN": "IA3CP24CM0006",
+        "Project Start Date": "2024-02-05",
+        "Project End Date": "2028-12-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-USFS",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 5000000.0
+    },
+    {
+        "Title": "Gulf Coast Conservation Reserve Program",
+        "FAIN": "IA3CP25CM0007",
+        "Project Start Date": "2025-07-15",
+        "Project End Date": "2029-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-NRCS",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#MS;#24;#FL;#9",
+        "Award Amount": 3100000.0
+    },
+    {
+        "Title": "Gulf of Mexico Habitat Restoration via Conservation Corps Partnerships/Youth Conservation Corps",
+        "FAIN": "IAACP16DI0002",
+        "Project Start Date": "2016-06-01",
+        "Project End Date": "2018-12-31",
+        "Grant Lead": "Kristin Smith",
+        "Programs Staff Lead": "Not Applicable",
+        "Recipient": "DOI-BIA",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 447944.45
+    },
+    {
+        "Title": "Bayou DuLarge Ridge, Marsh and Hydrologic Restoration (Planning)",
+        "FAIN": "IAACP17DA0007",
+        "Project Start Date": "2017-02-23",
+        "Project End Date": "2021-12-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "John Ettinger",
+        "Recipient": "USDA-NRCS Louisiana",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 4260677.89
+    },
+    {
+        "Title": "Tate's Hell Strategy 1 (Planning and Implementation)",
+        "FAIN": "IAACP17DA0041",
+        "Project Start Date": "2017-06-20",
+        "Project End Date": "2023-10-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-USFS",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 7000000.0
+    },
+    {
+        "Title": "Gulf of Mexico Habitat Restoration via Conservation Corps Partnership",
+        "FAIN": "IAACP17DC0030",
+        "Project Start Date": "2017-06-15",
+        "Project End Date": "2020-09-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 8677184.32
+    },
+    {
+        "Title": "Council Monitoring & Assessment Program Development",
+        "FAIN": "IAACP17DC0038",
+        "Project Start Date": "2017-06-15",
+        "Project End Date": "2021-12-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOC-NOAA NCCOS",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 1630228.84
+    },
+    {
+        "Title": "Baseline Flow, Gage Analysis & On-Line Tool to Support Restoration",
+        "FAIN": "IAACP17DI0001",
+        "Project Start Date": "2016-12-01",
+        "Project End Date": "2023-11-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-USGS",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 5549800.0
+    },
+    {
+        "Title": "Strategic Conservation Assessment of Gulf Coast Landscapes",
+        "FAIN": "IAACP17DI0005",
+        "Project Start Date": "2017-06-20",
+        "Project End Date": "2022-07-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "DOI-USFWS",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 1841808.51
+    },
+    {
+        "Title": "Council Monitoring & Assessment Program Development (USGS)",
+        "FAIN": "IAACP17DI0006",
+        "Project Start Date": "2017-03-08",
+        "Project End Date": "2020-12-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-USGS",
+        "Grant Program": "FPL",
+        "States": "TX;#43;#AL;#1;#MS;#24;#LA;#18;#FL;#9",
+        "Award Amount": 1174999.98
+    },
+    {
+        "Title": "Mobile Bay National Estuary Program-Planning",
+        "FAIN": "IAACP17EP0028",
+        "Project Start Date": "2017-06-01",
+        "Project End Date": "2020-03-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Brie Bernik",
+        "Recipient": "EPA",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 350268.41
+    },
+    {
+        "Title": "Commitment and Planning Support \u2013 DHS / U.S. Coast Guard",
+        "FAIN": "IAACP18CG0059",
+        "Project Start Date": "2018-06-01",
+        "Project End Date": "2023-05-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "USCG",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 1316057.1
+    },
+    {
+        "Title": "Gulf Coast Conservation Reserve Program (GCCRP) (Planning & Implementation) - Alabama",
+        "FAIN": "IAACP18DA0014",
+        "Project Start Date": "2018-02-15",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-NRCS Alabama",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 1500000.0
+    },
+    {
+        "Title": "Gulf Coast Conservation Reserve Program (GCCRP) (Planning & Implementation) - Mississippi",
+        "FAIN": "IAACP18DA0016",
+        "Project Start Date": "2018-01-05",
+        "Project End Date": "2024-02-03",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-NRCS Mississippi",
+        "Grant Program": "FPL",
+        "States": "MS;#24",
+        "Award Amount": 1499916.74
+    },
+    {
+        "Title": "Commitment and Planning Support\u2014United States Department of Agriculture",
+        "FAIN": "IAACP18DA0063",
+        "Project Start Date": "2018-08-08",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-NRCS GCERT",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 2100000.0
+    },
+    {
+        "Title": "Robinson Preserve Wetlands Restoration (Implementation)",
+        "FAIN": "IAACP18DC0033",
+        "Project Start Date": "2018-08-17",
+        "Project End Date": "2025-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 1790546.0
+    },
+    {
+        "Title": "Marsh Restoration in Fish River, Weeks Bay, Oyster Bay & Meadows Tract (Planning) - Fish River and Weeks Bay Marsh",
+        "FAIN": "IAACP18DC0034",
+        "Project Start Date": "2018-08-17",
+        "Project End Date": "2020-11-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 318756.42
+    },
+    {
+        "Title": "Marsh Restoration in Fish River, Weeks Bay, Oyster Bay & Meadows Tract (Planning) - Meadows Tract",
+        "FAIN": "IAACP18DC0051",
+        "Project Start Date": "2018-08-17",
+        "Project End Date": "2020-11-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 295279.16
+    },
+    {
+        "Title": "NOAA Marsh Restoration in Fish River, Weeks Bay, Oyster Bay & Meadows Tract (Planning) - Oyster Bay",
+        "FAIN": "IAACP18DC0052",
+        "Project Start Date": "2018-08-17",
+        "Project End Date": "2020-11-30",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Kathryn Keating",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 264370.41
+    },
+    {
+        "Title": "Plug Abandoned Oil and Gas Wells (Implementation)",
+        "FAIN": "IAACP18DI0003",
+        "Project Start Date": "2018-04-25",
+        "Project End Date": "2024-07-01",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-NPS",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 1317567.0
+    },
+    {
+        "Title": "Commitment and Planning Support \u2013 DOI",
+        "FAIN": "IAACP18DI0065",
+        "Project Start Date": "2018-07-18",
+        "Project End Date": "2027-01-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 2100000.0
+    },
+    {
+        "Title": "Tampa Bay National Estuary Program (Implementation)",
+        "FAIN": "IAACP18EP0017",
+        "Project Start Date": "2018-02-22",
+        "Project End Date": "2024-01-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "EPA",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 1362428.98
+    },
+    {
+        "Title": "Gulf of Mexico Estuary Program (GMEP) (Planning)",
+        "FAIN": "IAACP18EP0027",
+        "Project Start Date": "2018-06-25",
+        "Project End Date": "2023-12-31",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "EPA",
+        "Grant Program": "FPL",
+        "States": "AL;#1;#FL;#9",
+        "Award Amount": 2030009.43
+    },
+    {
+        "Title": "Commitment and Planning Support - EPA",
+        "FAIN": "IAACP18EP0057",
+        "Project Start Date": "2018-08-15",
+        "Project End Date": "2025-08-14",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "EPA",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 2068820.0
+    },
+    {
+        "Title": "Gulf Coast Conservation Reserve Program (GCCRP) (Planning & Implementation) - Texas",
+        "FAIN": "IAACP19DA0036",
+        "Project Start Date": "2019-10-17",
+        "Project End Date": "2024-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-NRCS Texas",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 1500000.0
+    },
+    {
+        "Title": "Bahia Grande Wetland System Restoration (Planning)",
+        "FAIN": "IAACP19DC0031",
+        "Project Start Date": "2019-03-04",
+        "Project End Date": "2029-12-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 1373181.0
+    },
+    {
+        "Title": "Money Bayou Wetlands Restoration (Planning)",
+        "FAIN": "IAACP19DC0032",
+        "Project Start Date": "2018-12-21",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOC-NOAA Restoration Center",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 1240379.0
+    },
+    {
+        "Title": "Commitment and Planning Support - US Department of Commerce, National Oceanic and Atmospheric Administration",
+        "FAIN": "IAACP19DC0067",
+        "Project Start Date": "2019-05-01",
+        "Project End Date": "2026-09-30",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOC-NOAA Fisheries",
+        "Grant Program": "FPL",
+        "States": "",
+        "Award Amount": 2100000.0
+    },
+    {
+        "Title": "Jean Lafitte Canal Backfilling (Implementation)",
+        "FAIN": "IAACP19DI0004",
+        "Project Start Date": "2019-08-08",
+        "Project End Date": "2026-12-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "DOI-NPS",
+        "Grant Program": "FPL",
+        "States": "LA;#18",
+        "Award Amount": 8768660.34
+    },
+    {
+        "Title": "Gulf Coast Conservation Reserve Program (GCCRP) (Planning & Implementation) - Florida",
+        "FAIN": "IAACP20DA0023",
+        "Project Start Date": "2020-01-10",
+        "Project End Date": "2024-01-15",
+        "Grant Lead": "Joshua Easton",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "USDA-NRCS Florida",
+        "Grant Program": "FPL",
+        "States": "FL;#9",
+        "Award Amount": 1248679.92
+    },
+    {
+        "Title": "Mobile Bay National Estuary Program - Implementation",
+        "FAIN": "IAACP20EP0099",
+        "Project Start Date": "2020-02-01",
+        "Project End Date": "2027-01-31",
+        "Grant Lead": "Victoria Schenk",
+        "Programs Staff Lead": "Amy Newbold",
+        "Recipient": "EPA",
+        "Grant Program": "FPL",
+        "States": "AL;#1",
+        "Award Amount": 1742000.0
+    },
+    {
+        "Title": "Round Island Living Shoreline Demonstration and Protection Project (Planning)",
+        "FAIN": "GNTSP20MS0087",
+        "Project Start Date": "2019-11-01",
+        "Project End Date": "2027-10-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 2160747.0
+    },
+    {
+        "Title": "Activity #35: Mississippi Artificial Intelligence Network (MAIN)",
+        "FAIN": "GNSSP26MS0075",
+        "Project Start Date": "2025-11-12",
+        "Project End Date": "2030-04-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 6783094.0
+    },
+    {
+        "Title": "Activity #36: Port of Gulfport Expansion",
+        "FAIN": "GNSSP26MS0076",
+        "Project Start Date": "2025-11-13",
+        "Project End Date": "2027-05-31",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1173243.0
+    },
+    {
+        "Title": "Activity #34: Career Pathways for Hydrographic Technicians",
+        "FAIN": "GNSSP26MS0077",
+        "Project Start Date": "2025-12-03",
+        "Project End Date": "2029-06-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1901107.0
+    },
+    {
+        "Title": "FY26 RESTORE Living Shoreline Protection (BKT 2)",
+        "FAIN": "GT3CP26TX0011",
+        "Project Start Date": "2026-03-13",
+        "Project End Date": "2031-11-30",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 14899851.0
+    },
+    {
+        "Title": " Stock Enhancements of Spotted Seatrout in Mississippi",
+        "FAIN": "GNSSP26MS0078",
+        "Project Start Date": "2026-04-01",
+        "Project End Date": "2030-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1099528.0
+    },
+    {
+        "Title": "Living Shorelines Assistance Program",
+        "FAIN": "GNSSP26MS0079",
+        "Project Start Date": "2026-04-16",
+        "Project End Date": "2031-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1099974.0
+    },
+    {
+        "Title": " Mississippi Sound Estuary Program",
+        "FAIN": "GNSSP26MS0080",
+        "Project Start Date": "2026-04-16",
+        "Project End Date": "2029-09-30",
+        "Grant Lead": "Bjorn Johnson",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "MDEQ",
+        "Grant Program": "SEP",
+        "States": "MS;#24",
+        "Award Amount": 1099577.0
+    },
+    {
+        "Title": " FY26 RESTORE FPL3B WTR QTY B2",
+        "FAIN": "GT3CP26TX0012",
+        "Project Start Date": "2026-07-06",
+        "Project End Date": "2032-05-31",
+        "Grant Lead": "Bridget Zachary",
+        "Programs Staff Lead": "Heather Young",
+        "Recipient": "TCEQ",
+        "Grant Program": "FPL",
+        "States": "TX;#43",
+        "Award Amount": 4955743.0
+    }
+];
+        const amendmentData = {
+    "GNTCP18LA0055": [
+        {
+            "date": "2020-10-28",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-02-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-12-16",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2018-05-15",
+            "type": ""
+        }
+    ],
+    "GNTCP18AL0064": [
+        {
+            "date": "2023-04-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-01-21",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2018-05-15",
+            "type": ""
+        }
+    ],
+    "GNTCP18FL0054": [
+        {
+            "date": "2023-02-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-03-25",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2018-04-18",
+            "type": ""
+        }
+    ],
+    "GNTCP18MS0056": [
+        {
+            "date": "2023-03-14",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-05-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2018-06-07",
+            "type": ""
+        }
+    ],
+    "GNTCP18TX0061": [
+        {
+            "date": "2018-05-15",
+            "type": ""
+        },
+        {
+            "date": "2023-04-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-04-01",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "IAACP18CG0059": [
+        {
+            "date": "2021-12-15",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-04-01",
+            "type": "Grant Closeout"
+        },
+        {
+            "date": "2018-05-29",
+            "type": ""
+        }
+    ],
+    "IAACP19DC0067": [
+        {
+            "date": "2019-05-01",
+            "type": ""
+        },
+        {
+            "date": "2023-10-05",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP18EP0057": [
+        {
+            "date": "2018-08-15",
+            "type": ""
+        },
+        {
+            "date": "2023-08-22",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP18DA0063": [
+        {
+            "date": "2023-08-02",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-13",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2018-08-08",
+            "type": ""
+        }
+    ],
+    "IAACP18DI0065": [
+        {
+            "date": "2018-07-18",
+            "type": ""
+        },
+        {
+            "date": "2023-08-28",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-07",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IA3CP24CM0006": [
+        {
+            "date": "2024-02-09",
+            "type": ""
+        }
+    ],
+    "IA3CP23CM0005": [
+        {
+            "date": "2023-09-18",
+            "type": ""
+        },
+        {
+            "date": "2023-09-20",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IA3CP22CM0002": [
+        {
+            "date": "2022-05-05",
+            "type": ""
+        },
+        {
+            "date": "2026-04-20",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IA3CP23CM0004": [
+        {
+            "date": "2023-05-10",
+            "type": ""
+        },
+        {
+            "date": "2026-07-13",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IA3CP21CM0001": [
+        {
+            "date": "2021-07-26",
+            "type": ""
+        },
+        {
+            "date": "2021-08-05",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IA3CP22CM0003": [
+        {
+            "date": "2022-06-01",
+            "type": ""
+        },
+        {
+            "date": "2024-06-20",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IA3CP25CM0007": [
+        {
+            "date": "2025-07-16",
+            "type": ""
+        }
+    ],
+    "GNTCP20AP0104": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2021-07-26",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-04-01",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-04-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-12-18",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17LA0025": [
+        {
+            "date": "2016-10-31",
+            "type": ""
+        },
+        {
+            "date": "2019-01-29",
+            "type": ""
+        },
+        {
+            "date": "2020-12-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-14",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP17LA0013": [
+        {
+            "date": "2016-10-26",
+            "type": ""
+        },
+        {
+            "date": "2017-11-14",
+            "type": ""
+        },
+        {
+            "date": "2020-04-28",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-14",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP18LA0035": [
+        {
+            "date": "2018-04-18",
+            "type": ""
+        },
+        {
+            "date": "2021-09-20",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-02-14",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-04",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17LA0044": [
+        {
+            "date": "2017-09-13",
+            "type": ""
+        },
+        {
+            "date": "2020-09-14",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-09-13",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-03-23",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-02",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP16LA0024": [
+        {
+            "date": "2016-09-28",
+            "type": ""
+        },
+        {
+            "date": "2019-01-25",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-14",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP19AL0085": [
+        {
+            "date": "2019-04-15",
+            "type": ""
+        },
+        {
+            "date": "2021-04-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-01-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-07-02",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP18AL0068": [
+        {
+            "date": "2018-09-21",
+            "type": ""
+        },
+        {
+            "date": "2023-06-15",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-02-24",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP18AL0066": [
+        {
+            "date": "2018-09-10",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-08-29",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-06-07",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-12-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-03",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GT1CP21AL0001": [
+        {
+            "date": "2021-01-22",
+            "type": ""
+        },
+        {
+            "date": "2025-12-19",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP19AL0082": [
+        {
+            "date": "2022-02-01",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-02-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-06",
+            "type": "Grant Closeout"
+        },
+        {
+            "date": "2019-04-01",
+            "type": ""
+        }
+    ],
+    "GT1CP23AL0003": [
+        {
+            "date": "2023-06-22",
+            "type": ""
+        },
+        {
+            "date": "2025-05-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-04-02",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17FL0039": [
+        {
+            "date": "2017-03-30",
+            "type": ""
+        },
+        {
+            "date": "2020-06-26",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2020-12-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-14",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP17FL0008": [
+        {
+            "date": "2017-07-10",
+            "type": ""
+        },
+        {
+            "date": "2022-06-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-05-14",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-05-21",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17FL0018": [
+        {
+            "date": "2017-04-13",
+            "type": ""
+        },
+        {
+            "date": "2020-01-06",
+            "type": ""
+        },
+        {
+            "date": "2021-01-11",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-05-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-03-11",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-02-24",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17FL0026": [
+        {
+            "date": "2017-06-14",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-12-19",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-07-21",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP18FL0047": [
+        {
+            "date": "2018-04-02",
+            "type": ""
+        },
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-04",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP17FL0040": [
+        {
+            "date": "2025-01-14",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2016-12-15",
+            "type": ""
+        },
+        {
+            "date": "2019-01-26",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-09-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-12-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-04",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17FL0015": [
+        {
+            "date": "2017-08-22",
+            "type": ""
+        },
+        {
+            "date": "2022-06-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-05-15",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GT1CP23MS0002": [
+        {
+            "date": "2023-04-11",
+            "type": ""
+        },
+        {
+            "date": "2025-02-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-02-25",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17MS0022": [
+        {
+            "date": "2016-11-16",
+            "type": ""
+        },
+        {
+            "date": "2019-01-25",
+            "type": ""
+        },
+        {
+            "date": "2019-12-20",
+            "type": ""
+        },
+        {
+            "date": "2020-08-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-11-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-04-10",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-07",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP17MS0020": [
+        {
+            "date": "2016-11-16",
+            "type": ""
+        },
+        {
+            "date": "2019-01-25",
+            "type": ""
+        },
+        {
+            "date": "2023-09-14",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP19MS0060": [
+        {
+            "date": "2018-10-24",
+            "type": ""
+        },
+        {
+            "date": "2019-02-25",
+            "type": ""
+        },
+        {
+            "date": "2023-02-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-02-26",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTCP19MS0062": [
+        {
+            "date": "2019-06-04",
+            "type": ""
+        },
+        {
+            "date": "2022-06-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-06-13",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-16",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTCP17TX0010": [
+        {
+            "date": "2023-09-11",
+            "type": "Grant Closeout"
+        },
+        {
+            "date": "2016-11-28",
+            "type": ""
+        },
+        {
+            "date": "2017-02-28",
+            "type": ""
+        },
+        {
+            "date": "2017-04-13",
+            "type": ""
+        }
+    ],
+    "GNTCP18TX0011": [
+        {
+            "date": "2017-10-24",
+            "type": ""
+        },
+        {
+            "date": "2018-06-12",
+            "type": ""
+        },
+        {
+            "date": "2019-05-29",
+            "type": ""
+        },
+        {
+            "date": "2023-09-15",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTCP17TX0009": [
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2020-11-19",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-11",
+            "type": "Grant Closeout"
+        },
+        {
+            "date": "2016-12-27",
+            "type": ""
+        },
+        {
+            "date": "2017-04-12",
+            "type": ""
+        },
+        {
+            "date": "2017-09-11",
+            "type": ""
+        },
+        {
+            "date": "2018-06-12",
+            "type": ""
+        },
+        {
+            "date": "2019-01-15",
+            "type": ""
+        },
+        {
+            "date": "2019-02-28",
+            "type": ""
+        },
+        {
+            "date": "2019-07-01",
+            "type": ""
+        }
+    ],
+    "GNTCP18TX0012": [
+        {
+            "date": "2018-07-27",
+            "type": ""
+        },
+        {
+            "date": "2019-11-19",
+            "type": ""
+        },
+        {
+            "date": "2021-05-18",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-07-15",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP17DI0005": [
+        {
+            "date": "2017-06-20",
+            "type": ""
+        },
+        {
+            "date": "2020-05-13",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-06-22",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-09-24",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IA1CP21CM0002": [
+        {
+            "date": "2021-08-25",
+            "type": ""
+        }
+    ],
+    "IAACP18EP0027": [
+        {
+            "date": "2018-06-25",
+            "type": ""
+        },
+        {
+            "date": "2023-06-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-04-01",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP20EP0099": [
+        {
+            "date": "2020-02-14",
+            "type": ""
+        },
+        {
+            "date": "2026-02-03",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP17EP0028": [
+        {
+            "date": "2017-05-23",
+            "type": ""
+        },
+        {
+            "date": "2018-06-14",
+            "type": ""
+        },
+        {
+            "date": "2019-09-25",
+            "type": ""
+        },
+        {
+            "date": "2024-02-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP18EP0017": [
+        {
+            "date": "2018-02-22",
+            "type": ""
+        },
+        {
+            "date": "2023-02-06",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-04-01",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP17DA0041": [
+        {
+            "date": "2017-06-20",
+            "type": ""
+        },
+        {
+            "date": "2022-10-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP17DI0001": [
+        {
+            "date": "2016-11-21",
+            "type": ""
+        },
+        {
+            "date": "2017-10-24",
+            "type": ""
+        },
+        {
+            "date": "2025-11-20",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP17DI0006": [
+        {
+            "date": "2017-03-08",
+            "type": ""
+        },
+        {
+            "date": "2018-09-07",
+            "type": ""
+        },
+        {
+            "date": "2020-01-16",
+            "type": ""
+        },
+        {
+            "date": "2024-02-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP16DI0002": [
+        {
+            "date": "2016-05-10",
+            "type": ""
+        },
+        {
+            "date": "2016-07-20",
+            "type": ""
+        },
+        {
+            "date": "2017-12-06",
+            "type": ""
+        },
+        {
+            "date": "2020-02-07",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IA1CP21CM0001": [
+        {
+            "date": "2021-04-02",
+            "type": ""
+        },
+        {
+            "date": "2022-09-07",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-19",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-11",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IA1CP25CM0004": [
+        {
+            "date": "2025-06-26",
+            "type": ""
+        }
+    ],
+    "IAACP19DC0031": [
+        {
+            "date": "2024-08-20",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2019-03-04",
+            "type": ""
+        },
+        {
+            "date": "2020-12-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-08-06",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-04-01",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-01-19",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP17DC0038": [
+        {
+            "date": "2017-06-14",
+            "type": ""
+        },
+        {
+            "date": "2020-01-16",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-06-29",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-09-24",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP17DC0030": [
+        {
+            "date": "2017-06-14",
+            "type": ""
+        },
+        {
+            "date": "2020-06-12",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-09-24",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IA1CP23CM0003": [
+        {
+            "date": "2023-05-23",
+            "type": ""
+        },
+        {
+            "date": "2025-03-20",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP18DC0034": [
+        {
+            "date": "2018-08-17",
+            "type": ""
+        },
+        {
+            "date": "2020-07-20",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-02-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP18DC0051": [
+        {
+            "date": "2018-08-17",
+            "type": ""
+        },
+        {
+            "date": "2020-07-20",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-02-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP19DC0032": [
+        {
+            "date": "2024-06-11",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2018-12-21",
+            "type": ""
+        },
+        {
+            "date": "2020-12-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-10-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-08-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-01-19",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP18DC0052": [
+        {
+            "date": "2018-08-17",
+            "type": ""
+        },
+        {
+            "date": "2020-02-03",
+            "type": ""
+        },
+        {
+            "date": "2020-12-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-02-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP18DC0033": [
+        {
+            "date": "2018-08-17",
+            "type": ""
+        },
+        {
+            "date": "2023-08-22",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP19DI0004": [
+        {
+            "date": "2019-08-07",
+            "type": ""
+        },
+        {
+            "date": "2025-01-14",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "IAACP18DI0003": [
+        {
+            "date": "2018-04-25",
+            "type": ""
+        },
+        {
+            "date": "2019-03-15",
+            "type": ""
+        },
+        {
+            "date": "2020-04-02",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-03-18",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-03-29",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-08-04",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "IAACP17DA0007": [
+        {
+            "date": "2017-02-23",
+            "type": ""
+        },
+        {
+            "date": "2019-10-10",
+            "type": ""
+        },
+        {
+            "date": "2022-02-01",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-09-24",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP18DA0014": [
+        {
+            "date": "2018-02-15",
+            "type": ""
+        }
+    ],
+    "IAACP20DA0023": [
+        {
+            "date": "2020-01-10",
+            "type": ""
+        },
+        {
+            "date": "2025-11-20",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP18DA0016": [
+        {
+            "date": "2018-01-05",
+            "type": ""
+        },
+        {
+            "date": "2023-02-06",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-11-20",
+            "type": "Grant Closeout"
+        }
+    ],
+    "IAACP19DA0036": [
+        {
+            "date": "2019-09-18",
+            "type": ""
+        }
+    ],
+    "GT3CP24LA0009": [
+        {
+            "date": "2024-03-13",
+            "type": ""
+        }
+    ],
+    "GT3CP24AL0010": [
+        {
+            "date": "2024-03-13",
+            "type": ""
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-03-19",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GT3CP23AL0007": [
+        {
+            "date": "2023-03-06",
+            "type": ""
+        },
+        {
+            "date": "2025-11-17",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GT3CP22AL0001": [
+        {
+            "date": "2021-12-01",
+            "type": ""
+        },
+        {
+            "date": "2024-05-23",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GT3CP22FL0004": [
+        {
+            "date": "2022-06-16",
+            "type": ""
+        },
+        {
+            "date": "2023-11-09",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GT3CP22FL0006": [
+        {
+            "date": "2022-09-09",
+            "type": ""
+        },
+        {
+            "date": "2024-05-06",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GT3CP22FL0002": [
+        {
+            "date": "2022-03-01",
+            "type": ""
+        },
+        {
+            "date": "2026-02-11",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GT3CP22FL0003": [
+        {
+            "date": "2022-06-16",
+            "type": ""
+        },
+        {
+            "date": "2024-04-22",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-06-16",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GT3CP23MS0008": [
+        {
+            "date": "2023-09-07",
+            "type": ""
+        }
+    ],
+    "GT3CP22TX0005": [
+        {
+            "date": "2022-09-09",
+            "type": ""
+        },
+        {
+            "date": "2024-11-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-02",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-13",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GT3CP26TX0012": [
+        {
+            "date": "2026-07-06",
+            "type": ""
+        }
+    ],
+    "GT3CP26TX0011": [
+        {
+            "date": "2026-03-13",
+            "type": ""
+        }
+    ],
+    "GNTSP20AL0079": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2023-09-11",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP16MS0019": [
+        {
+            "date": "2016-05-10",
+            "type": ""
+        },
+        {
+            "date": "2016-06-29",
+            "type": ""
+        },
+        {
+            "date": "2018-09-07",
+            "type": ""
+        },
+        {
+            "date": "2020-02-18",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP17TX0042": [
+        {
+            "date": "2017-04-06",
+            "type": ""
+        },
+        {
+            "date": "2018-01-19",
+            "type": ""
+        },
+        {
+            "date": "2018-07-03",
+            "type": ""
+        },
+        {
+            "date": "2020-02-12",
+            "type": ""
+        },
+        {
+            "date": "2023-09-11",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP16FL0021": [
+        {
+            "date": "2016-06-23",
+            "type": ""
+        },
+        {
+            "date": "2018-12-05",
+            "type": ""
+        },
+        {
+            "date": "2019-05-20",
+            "type": ""
+        },
+        {
+            "date": "2019-11-19",
+            "type": ""
+        },
+        {
+            "date": "2021-04-21",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP17LA0046": [
+        {
+            "date": "2017-08-31",
+            "type": ""
+        },
+        {
+            "date": "2020-09-14",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2020-06-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-02-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-06-24",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20LA0072": [
+        {
+            "date": "2020-02-03",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-08-31",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-12-17",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20LA0081": [
+        {
+            "date": "2020-02-17",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-08-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-08-01",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-02",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP18LA0049": [
+        {
+            "date": "2018-04-13",
+            "type": ""
+        },
+        {
+            "date": "2018-05-17",
+            "type": ""
+        },
+        {
+            "date": "2019-11-19",
+            "type": ""
+        },
+        {
+            "date": "2021-10-19",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-10-27",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-10-12",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21LA0018": [
+        {
+            "date": "2021-02-05",
+            "type": ""
+        },
+        {
+            "date": "2023-02-21",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20LA0071": [
+        {
+            "date": "2019-12-20",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-04-22",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20LA0083": [
+        {
+            "date": "2020-02-08",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-06-16",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-03-06",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP19LA0070": [
+        {
+            "date": "2019-06-18",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-10-19",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-06-16",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-06-12",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP25LA0072": [
+        {
+            "date": "2025-06-12",
+            "type": ""
+        }
+    ],
+    "GNTSP20LA0076": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-04-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-04",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20AL0094": [
+        {
+            "date": "2019-12-18",
+            "type": ""
+        },
+        {
+            "date": "2023-06-22",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-05",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-07-15",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP25AL0063": [
+        {
+            "date": "2025-01-23",
+            "type": ""
+        },
+        {
+            "date": "2025-10-29",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-06",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20AL0011": [
+        {
+            "date": "2020-07-27",
+            "type": ""
+        },
+        {
+            "date": "2023-05-15",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-06-11",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-08-13",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21AL0026": [
+        {
+            "date": "2021-05-12",
+            "type": ""
+        },
+        {
+            "date": "2023-05-22",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-01-24",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP20AL0096": [
+        {
+            "date": "2020-02-04",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-06-13",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP22AL0043": [
+        {
+            "date": "2022-05-13",
+            "type": ""
+        },
+        {
+            "date": "2022-09-01",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-11-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-06-11",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-05-29",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22AL0042": [
+        {
+            "date": "2022-05-13",
+            "type": ""
+        },
+        {
+            "date": "2023-05-21",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-08-13",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20AL0120": [
+        {
+            "date": "2020-02-13",
+            "type": ""
+        },
+        {
+            "date": "2023-05-22",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21AL0024": [
+        {
+            "date": "2021-04-26",
+            "type": ""
+        },
+        {
+            "date": "2022-03-23",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-03-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21AL0014": [
+        {
+            "date": "2020-12-17",
+            "type": ""
+        },
+        {
+            "date": "2023-06-22",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-05",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-03-17",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20AL0003": [
+        {
+            "date": "2020-04-16",
+            "type": ""
+        },
+        {
+            "date": "2022-10-19",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-05-20",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-06-12",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22AL0031": [
+        {
+            "date": "2021-12-17",
+            "type": ""
+        },
+        {
+            "date": "2023-08-08",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20AL0007": [
+        {
+            "date": "2020-04-16",
+            "type": ""
+        },
+        {
+            "date": "2022-04-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-05-22",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-05",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-04-06",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20AL0008": [
+        {
+            "date": "2020-04-22",
+            "type": ""
+        },
+        {
+            "date": "2021-05-10",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-07-25",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-03-30",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21AL0016": [
+        {
+            "date": "2020-12-17",
+            "type": ""
+        },
+        {
+            "date": "2022-07-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-09-08",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-02-07",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-12",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP20AL0095": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2022-09-09",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-02-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-01-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-05-16",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-12-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP20AL0002": [
+        {
+            "date": "2020-04-14",
+            "type": ""
+        },
+        {
+            "date": "2023-03-07",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-05-20",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20AL0001": [
+        {
+            "date": "2020-04-16",
+            "type": ""
+        },
+        {
+            "date": "2023-04-25",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-10",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP20AL0009": [
+        {
+            "date": "2020-06-01",
+            "type": ""
+        },
+        {
+            "date": "2022-05-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-04-20",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-07",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21AL0019": [
+        {
+            "date": "2021-03-05",
+            "type": ""
+        },
+        {
+            "date": "2023-03-02",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-12-07",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-10-17",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21AL0027": [
+        {
+            "date": "2021-09-07",
+            "type": ""
+        }
+    ],
+    "GNSSP21AL0021": [
+        {
+            "date": "2021-04-06",
+            "type": ""
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP20AL0006": [
+        {
+            "date": "2020-04-16",
+            "type": ""
+        },
+        {
+            "date": "2022-04-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-09-08",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-02-15",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-06-12",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP20AL0004": [
+        {
+            "date": "2020-04-16",
+            "type": ""
+        },
+        {
+            "date": "2022-04-08",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-09-08",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-08-02",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-12-13",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP22AL0032": [
+        {
+            "date": "2022-02-08",
+            "type": ""
+        },
+        {
+            "date": "2024-01-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-08-12",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20AL0005": [
+        {
+            "date": "2020-04-16",
+            "type": ""
+        },
+        {
+            "date": "2023-02-15",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-06-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-03-23",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22AL0038": [
+        {
+            "date": "2022-05-10",
+            "type": ""
+        }
+    ],
+    "GNSSP22AL0033": [
+        {
+            "date": "2022-01-13",
+            "type": ""
+        },
+        {
+            "date": "2025-05-09",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21MS0015": [
+        {
+            "date": "2020-12-17",
+            "type": ""
+        },
+        {
+            "date": "",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-06-05",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP26MS0077": [
+        {
+            "date": "2025-12-03",
+            "type": ""
+        }
+    ],
+    "GNSSP25MS0071": [
+        {
+            "date": "2025-04-18",
+            "type": ""
+        }
+    ],
+    "GNSSP24MS0060": [
+        {
+            "date": "2024-08-22",
+            "type": ""
+        }
+    ],
+    "GNSSP25MS0066": [
+        {
+            "date": "2025-06-02",
+            "type": ""
+        }
+    ],
+    "GNTSP18MS0048": [
+        {
+            "date": "2018-09-04",
+            "type": ""
+        },
+        {
+            "date": "2022-05-02",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2023-06-26",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-06-27",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-07",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP25MS0065": [
+        {
+            "date": "2025-07-01",
+            "type": ""
+        }
+    ],
+    "GNSSP24MS0056": [
+        {
+            "date": "2024-03-13",
+            "type": ""
+        },
+        {
+            "date": "2025-09-02",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP23MS0051": [
+        {
+            "date": "2023-07-07",
+            "type": ""
+        },
+        {
+            "date": "2026-06-04",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20MS0084": [
+        {
+            "date": "2019-11-07",
+            "type": ""
+        },
+        {
+            "date": "2024-01-23",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-07-26",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20MS0103": [
+        {
+            "date": "2020-01-28",
+            "type": ""
+        },
+        {
+            "date": "2024-02-26",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP25MS0070": [
+        {
+            "date": "2025-05-22",
+            "type": ""
+        }
+    ],
+    "GNSSP24MS0059": [
+        {
+            "date": "2024-07-08",
+            "type": ""
+        }
+    ],
+    "GNSSP25MS0061": [
+        {
+            "date": "2024-12-19",
+            "type": ""
+        }
+    ],
+    "GNTSP18MS0053": [
+        {
+            "date": "2018-09-07",
+            "type": ""
+        },
+        {
+            "date": "2020-07-23",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-15",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP26MS0079": [
+        {
+            "date": "2026-04-16",
+            "type": ""
+        }
+    ],
+    "GNSSP26MS0075": [
+        {
+            "date": "2025-11-12",
+            "type": ""
+        }
+    ],
+    "GNSSP21MS0017": [
+        {
+            "date": "2021-02-05",
+            "type": ""
+        },
+        {
+            "date": "2022-07-25",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-10-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-08-13",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP18MS0058": [
+        {
+            "date": "2018-09-21",
+            "type": ""
+        },
+        {
+            "date": "2019-10-29",
+            "type": ""
+        },
+        {
+            "date": "2020-01-22",
+            "type": ""
+        },
+        {
+            "date": "2021-02-10",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2021-11-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-09-22",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-12-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-02",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP26MS0080": [
+        {
+            "date": "2026-04-16",
+            "type": ""
+        }
+    ],
+    "GNTSP20MS0128": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2023-02-09",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-05-20",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP25MS0073": [
+        {
+            "date": "2025-05-22",
+            "type": ""
+        }
+    ],
+    "GNTSP19MS0075": [
+        {
+            "date": "2019-04-16",
+            "type": ""
+        },
+        {
+            "date": "2024-04-16",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP25MS0069": [
+        {
+            "date": "2025-05-22",
+            "type": ""
+        }
+    ],
+    "GNSSP26MS0076": [
+        {
+            "date": "2025-11-13",
+            "type": ""
+        }
+    ],
+    "GNSSP23MS0045": [
+        {
+            "date": "2023-02-16",
+            "type": ""
+        },
+        {
+            "date": "2025-02-20",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-08",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP19MS0080": [
+        {
+            "date": "2019-08-01",
+            "type": ""
+        },
+        {
+            "date": "2024-07-26",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20MS0087": [
+        {
+            "date": "2019-10-29",
+            "type": ""
+        },
+        {
+            "date": "2022-10-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-10-17",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP26MS0078": [
+        {
+            "date": "2026-04-01",
+            "type": ""
+        }
+    ],
+    "GNSSP25MS0062": [
+        {
+            "date": "2024-12-19",
+            "type": ""
+        }
+    ],
+    "GNSSP24MS0058": [
+        {
+            "date": "2024-07-02",
+            "type": ""
+        }
+    ],
+    "GNTSP20TX0100": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2021-12-16",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-07-17",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-06-23",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP23TX0053": [
+        {
+            "date": "2023-08-21",
+            "type": ""
+        },
+        {
+            "date": "2025-06-23",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-09",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22TX0035": [
+        {
+            "date": "2022-04-20",
+            "type": ""
+        },
+        {
+            "date": "2023-05-22",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-06-20",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-09-03",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-12-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21FL0025": [
+        {
+            "date": "2021-05-12",
+            "type": ""
+        },
+        {
+            "date": "2024-03-11",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-02-24",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22FL0036": [
+        {
+            "date": "2022-05-11",
+            "type": ""
+        },
+        {
+            "date": "2023-02-16",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20FL0090": [
+        {
+            "date": "2020-02-08",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-02",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22FL0040": [
+        {
+            "date": "2022-05-12",
+            "type": ""
+        },
+        {
+            "date": "2024-06-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-01-20",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP23FL0052": [
+        {
+            "date": "2023-08-21",
+            "type": ""
+        }
+    ],
+    "GNTSP20FL0105": [
+        {
+            "date": "2020-02-03",
+            "type": ""
+        },
+        {
+            "date": "2022-02-02",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-09-01",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP23FL0054": [
+        {
+            "date": "2024-01-16",
+            "type": ""
+        }
+    ],
+    "GNTSP20FL0098": [
+        {
+            "date": "2025-04-09",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2020-02-03",
+            "type": ""
+        }
+    ],
+    "GNSSP23FL0050": [
+        {
+            "date": "2023-06-26",
+            "type": ""
+        },
+        {
+            "date": "2025-04-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-03-04",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-07-06",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP20FL0010": [
+        {
+            "date": "2023-09-15",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-06-16",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2020-06-01",
+            "type": ""
+        },
+        {
+            "date": "2021-11-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-03-23",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21FL0029": [
+        {
+            "date": "2021-08-05",
+            "type": ""
+        },
+        {
+            "date": "2022-12-02",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP22FL0039": [
+        {
+            "date": "2022-05-11",
+            "type": ""
+        },
+        {
+            "date": "2023-07-17",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2025-05-08",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20FL0089": [
+        {
+            "date": "2020-09-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Grant Closeout"
+        },
+        {
+            "date": "2019-10-29",
+            "type": ""
+        }
+    ],
+    "GNTSP20FL0106": [
+        {
+            "date": "2020-02-04",
+            "type": ""
+        },
+        {
+            "date": "2020-10-28",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP23FL0049": [
+        {
+            "date": "2023-05-25",
+            "type": ""
+        },
+        {
+            "date": "2024-08-02",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2026-05-08",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22FL0037": [
+        {
+            "date": "2022-05-10",
+            "type": ""
+        },
+        {
+            "date": "2024-03-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-11-07",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP23FL0046": [
+        {
+            "date": "2023-02-22",
+            "type": ""
+        },
+        {
+            "date": "2024-11-18",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP25FL0074": [
+        {
+            "date": "2025-07-14",
+            "type": ""
+        }
+    ],
+    "GNSSP20FL0013": [
+        {
+            "date": "2020-09-22",
+            "type": ""
+        },
+        {
+            "date": "2025-05-01",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP22FL0034": [
+        {
+            "date": "2022-03-11",
+            "type": ""
+        },
+        {
+            "date": "2023-08-17",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2026-03-03",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20FL0107": [
+        {
+            "date": "2024-10-17",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2020-02-03",
+            "type": ""
+        },
+        {
+            "date": "2020-07-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2022-12-15",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP23FL0047": [
+        {
+            "date": "2023-03-08",
+            "type": ""
+        },
+        {
+            "date": "2025-04-03",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP25FL0068": [
+        {
+            "date": "2025-04-01",
+            "type": ""
+        }
+    ],
+    "GNTSP20FL0110": [
+        {
+            "date": "2025-02-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-11-07",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2020-02-04",
+            "type": ""
+        },
+        {
+            "date": "2021-11-15",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP24FL0057": [
+        {
+            "date": "2024-06-24",
+            "type": ""
+        }
+    ],
+    "GNSSP22FL0041": [
+        {
+            "date": "2022-05-12",
+            "type": ""
+        },
+        {
+            "date": "2024-10-21",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2025-01-24",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP19FL0086": [
+        {
+            "date": "2019-09-17",
+            "type": ""
+        },
+        {
+            "date": "2020-09-03",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-14",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP25FL0067": [
+        {
+            "date": "2025-04-01",
+            "type": ""
+        }
+    ],
+    "GNTSP20FL0091": [
+        {
+            "date": "2019-11-12",
+            "type": ""
+        },
+        {
+            "date": "2026-01-12",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21FL0023": [
+        {
+            "date": "2024-12-16",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2021-04-26",
+            "type": ""
+        },
+        {
+            "date": "2022-12-15",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP23FL0048": [
+        {
+            "date": "2023-05-25",
+            "type": ""
+        },
+        {
+            "date": "2026-01-12",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNSSP20FL0012": [
+        {
+            "date": "2020-09-18",
+            "type": ""
+        },
+        {
+            "date": "2022-07-13",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2022-07-13",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-05-02",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP24FL0055": [
+        {
+            "date": "2024-05-20",
+            "type": ""
+        },
+        {
+            "date": "",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21FL0022": [
+        {
+            "date": "2021-04-26",
+            "type": ""
+        },
+        {
+            "date": "2024-12-19",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNSSP21FL0028": [
+        {
+            "date": "2022-03-23",
+            "type": ""
+        }
+    ],
+    "GNSSP21FL0030": [
+        {
+            "date": "2021-09-07",
+            "type": ""
+        },
+        {
+            "date": "2024-11-12",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP22FL0044": [
+        {
+            "date": "2022-09-09",
+            "type": ""
+        }
+    ],
+    "GNTSP20FL0092": [
+        {
+            "date": "2024-05-20",
+            "type": "Monetary Amendment Type"
+        },
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2021-02-12",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2023-09-18",
+            "type": "Non-Monetary Amendment Type"
+        }
+    ],
+    "GNTSP20FL0097": [
+        {
+            "date": "2020-01-27",
+            "type": ""
+        },
+        {
+            "date": "2026-01-26",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNSSP25FL0064": [
+        {
+            "date": "2025-03-03",
+            "type": ""
+        }
+    ],
+    "GNSSP21FL0020": [
+        {
+            "date": "2021-03-05",
+            "type": ""
+        },
+        {
+            "date": "2023-09-06",
+            "type": "Monetary Amendment Type"
+        }
+    ],
+    "GNTSP19FL0077": [
+        {
+            "date": "2019-03-11",
+            "type": ""
+        },
+        {
+            "date": "2020-02-12",
+            "type": "Grant Closeout"
+        }
+    ],
+    "GNTSP20FL0088": [
+        {
+            "date": "2021-06-24",
+            "type": "Non-Monetary Amendment Type"
+        },
+        {
+            "date": "2024-08-08",
+            "type": "Grant Closeout"
+        },
+        {
+            "date": "2019-10-29",
+            "type": ""
+        }
+    ]
+};
+
+        // Parse data
+        const awards = jsonData.map(d => {
+            const startDate = new Date(d['Project Start Date']);
+            const fain = String(d['FAIN'] || '').trim();
+            const rawAmt = d['Award Amount'];
+            const amount = typeof rawAmt === 'number' ? rawAmt : (parseFloat(rawAmt) || 0.0);
+
+            // Find closeout amendment date
+            const amends = amendmentData[fain] || [];
+            let closeoutDate = null;
+            const closeoutAmend = amends.find(a => {
+                if (!a || !a.date) return false;
+                const typeStr = a.type ? String(a.type).trim().toLowerCase() : "";
+                return typeStr.includes('closeout') || typeStr.includes('grant closeout');
+            });
+            if (closeoutAmend) {
+                const cDate = new Date(closeoutAmend.date);
+                if (!isNaN(cDate.getTime())) closeoutDate = cDate;
+            }
+
+            return {
+                FAIN: fain,
+                startDate: startDate,
+                closeoutDate: closeoutDate,
+                amount: amount,
+                startYear: startDate && !isNaN(startDate.getTime()) ? startDate.getFullYear() : null,
+                closeYear: closeoutDate ? closeoutDate.getFullYear() : null
+            };
+        }).filter(d => d.startYear !== null);
+
+        // Cap chart timeline at current year
+        const currentYear = new Date().getFullYear();
+        const startYears = awards.map(d => d.startYear);
+        const minYear = d3.min(startYears) || 2014;
+        const maxYear = currentYear;
+
+        // Build Yearly Cumulative Summary up to Current Year
+        const yearlyData = [];
+        for (let yr = minYear; yr <= maxYear; yr++) {
+            let totalCount = 0;
+            let closedCount = 0;
+            let activeCount = 0;
+
+            let totalFunding = 0;
+            let closedFunding = 0;
+            let activeFunding = 0;
+
+            awards.forEach(d => {
+                if (d.startYear <= yr) {
+                    totalCount += 1;
+                    totalFunding += d.amount;
+
+                    if (d.closeYear !== null && d.closeYear <= yr) {
+                        closedCount += 1;
+                        closedFunding += d.amount;
+                    } else {
+                        activeCount += 1;
+                        activeFunding += d.amount;
+                    }
+                }
+            });
+
+            yearlyData.push({
+                year: yr,
+                totalCount: totalCount,
+                closedCount: closedCount,
+                activeCount: activeCount,
+                totalFunding: totalFunding,
+                closedFunding: closedFunding,
+                activeFunding: activeFunding
+            });
+        }
+
+        const margin = {top: 20, right: 30, bottom: 40, left: 90};
+        const width = 1200 - margin.left - margin.right;
+        const height = 360 - margin.top - margin.bottom;
+
+        const formatCurrency = d3.format("$,.0f");
+
+        // -------------------------------------------------------------
+        // RENDER CHART 1: Cumulative Award Counts
+        // -------------------------------------------------------------
+        (function renderCountChart() {
+            const svg = d3.select("#countChart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const x = d3.scaleBand()
+                .domain(yearlyData.map(d => d.year))
+                .range([0, width])
+                .padding(0.25);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(yearlyData, d => d.totalCount) * 1.08 || 220])
+                .range([height, 0]);
+
+            svg.append("g")
+                .attr("class", "grid")
+                .call(d3.axisLeft(y).tickSize(-width).tickFormat(""));
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x));
+
+            svg.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(8));
+
+            const groups = svg.selectAll(".year-group")
+                .data(yearlyData)
+                .enter()
+                .append("g")
+                .attr("transform", d => `translate(${x(d.year)},0)`);
+
+            // Closed portion (Orange) - Placed at the BOTTOM
+            groups.append("rect")
+                .attr("x", 0)
+                .attr("y", d => y(d.closedCount))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.closedCount))
+                .attr("fill", "#ff9800");
+
+            // Active portion (Blue) - Stacked on TOP
+            groups.append("rect")
+                .attr("x", 0)
+                .attr("y", d => y(d.totalCount))
+                .attr("width", x.bandwidth())
+                .attr("height", d => y(d.closedCount) - y(d.totalCount))
+                .attr("fill", "rgb(30, 144, 255)");
+
+            // Invisible overlay rect for tooltips
+            groups.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", x.bandwidth())
+                .attr("height", height)
+                .attr("fill", "transparent")
+                .style("cursor", "pointer")
+                .on("mouseover", function(event, d) {
+                    const tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+                    tooltip.transition().duration(150).style("opacity", .95);
+                    tooltip.html(`<b>Year ${d.year}</b><br>` +
+                                 `Total Cumulative Awards: <b>${d.totalCount}</b><br>` +
+                                 `Closed Out Portion: ${d.closedCount}<br>` +
+                                 `Active Portion: ${d.activeCount}`)
+                           .style("left", (event.pageX + 12) + "px")
+                           .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    d3.selectAll(".tooltip").remove();
+                });
+        })();
+
+        // -------------------------------------------------------------
+        // RENDER CHART 2: Cumulative Funding Amount
+        // -------------------------------------------------------------
+        (function renderFundingChart() {
+            const svg = d3.select("#fundingChart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const x = d3.scaleBand()
+                .domain(yearlyData.map(d => d.year))
+                .range([0, width])
+                .padding(0.25);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(yearlyData, d => d.totalFunding) * 1.08 || 1500000000])
+                .range([height, 0]);
+
+            svg.append("g")
+                .attr("class", "grid")
+                .call(d3.axisLeft(y).tickSize(-width).tickFormat(""));
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x));
+
+            svg.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(8).tickFormat(d => "$" + d3.format(".2s")(d).replace("G", "B")));
+
+            const groups = svg.selectAll(".year-group")
+                .data(yearlyData)
+                .enter()
+                .append("g")
+                .attr("transform", d => `translate(${x(d.year)},0)`);
+
+            // Closed Funding portion (Orange) - Placed at the BOTTOM
+            groups.append("rect")
+                .attr("x", 0)
+                .attr("y", d => y(d.closedFunding))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.closedFunding))
+                .attr("fill", "#ff9800");
+
+            // Active Funding portion (Blue) - Stacked on TOP
+            groups.append("rect")
+                .attr("x", 0)
+                .attr("y", d => y(d.totalFunding))
+                .attr("width", x.bandwidth())
+                .attr("height", d => y(d.closedFunding) - y(d.totalFunding))
+                .attr("fill", "rgb(30, 144, 255)");
+
+            // Invisible overlay rect for tooltips
+            groups.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", x.bandwidth())
+                .attr("height", height)
+                .attr("fill", "transparent")
+                .style("cursor", "pointer")
+                .on("mouseover", function(event, d) {
+                    const tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+                    tooltip.transition().duration(150).style("opacity", .95);
+                    tooltip.html(`<b>Year ${d.year}</b><br>` +
+                                 `Total Cumulative Funding: <b>${formatCurrency(d.totalFunding)}</b><br>` +
+                                 `Amount of Closed Awards: ${formatCurrency(d.closedFunding)}<br>` +
+                                 `Amount of Active Awards: ${formatCurrency(d.activeFunding)}`)
+                           .style("left", (event.pageX + 12) + "px")
+                           .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    d3.selectAll(".tooltip").remove();
+                });
+        })();
+    </script>
+</body>
+</html>
